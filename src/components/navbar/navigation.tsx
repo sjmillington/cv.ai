@@ -8,7 +8,7 @@ export default function Navigation() {
     return (
         <div className="navbar bg-base-100">
             <div className="flex-1">
-                <a className="btn btn-ghost normal-case text-xl">cv.AI</a>
+                <Link className="btn btn-ghost normal-case text-xl" href="/">cv.AI</Link>
             </div>
             {
                 sessionData ? (

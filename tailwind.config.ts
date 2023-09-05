@@ -11,10 +11,11 @@ export default {
   },
   daisyui: {
     themes: [
-      'pastel'
+      'bumblebee'
     ]
   },
   plugins: [
+    require("@tailwindcss/typography"),
     require('daisyui')
   ],
   
