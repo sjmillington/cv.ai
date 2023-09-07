@@ -7,6 +7,9 @@ import {
 
 import openai from "~/server/openai/client"
 
+
+const PESONAL_SECTION_SYSTEM_STATEMENT = 'Use the folowing facts to create a short CV profile with no more than 50 words'
+
 export const userRouter = createTRPCRouter({
     update: protectedProcedure
         .input(z.object({ data: z.object({
@@ -33,6 +36,9 @@ export const userRouter = createTRPCRouter({
             return ctx.prisma.user.findFirst({
                 where: {
                     id: ctx.session.user.id
+                },
+                include: {
+                    personal: true
                 }
             })
         }),
@@ -60,26 +66,41 @@ export const userRouter = createTRPCRouter({
                 throw new Error('No user?!')
             }
 
-            const completion = await openai.chat.completions.create({
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'Generate a single paragraph in the third person in the style of a personal section of a professional curriculum vitae'
+            let personal = user?.personal ?? await ctx.prisma.personalEntry.create({
+                data: {
+                    userId: user.id,
+                    prompt,
+                    result: ''
+                }
+            })
+
+            console.log(prompt)
+
+
+            let result = 'GPT Not Specified';
+
+            if(returnGPT) {
+                const completion = await openai.chat.completions.create({
+                    messages: [
+                        {
+                            role: 'system',
+                            content: PESONAL_SECTION_SYSTEM_STATEMENT
+                        },
+                        {
+                            role: 'user',
+                            content: `${prompt}`
+                        }
+                    ],
+                    model: 'gpt-3.5-turbo'
+                });
+
+                result = completion.choices[0]?.message.content ?? 'Unable to generate anything from this. Please try again.'
+
+                await ctx.prisma.personalEntry.update({
+                    where: {
+                        id: personal.id
                     },
-                    {
-                        role: 'user',
-                        content: prompt
-                    }
-                ],
-                model: 'gpt-3.5-turbo'
-            });
-
-            const result = completion.choices[0]?.message.content ?? 'Unable to generate anything from this. Please try again.'
-
-            if(!user.personal) {
-                await ctx.prisma.personalEntry.create({
                     data: {
-                        userId: user.id,
                         prompt,
                         result
                     }
@@ -87,14 +108,14 @@ export const userRouter = createTRPCRouter({
             } else {
                 await ctx.prisma.personalEntry.update({
                     where: {
-                        id: user.personal.id
+                        id: personal.id
                     },
                     data: {
-                        prompt,
-                        result
+                        prompt
                     }
                 })
             }
+
 
             return result
         })
