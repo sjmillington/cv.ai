@@ -51,7 +51,7 @@ model User {
     website       String?
     skills      String[]
     hobbies     String[]
-    personal    PersonalEntry?
+    personal    PersonalEntry
 }
 
 model VerificationToken {
