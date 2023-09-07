@@ -51,6 +51,7 @@ model User {
     website       String?
     skills      String[]
     hobbies     String[]
+    personal    PersonalEntry?
 }
 
 model VerificationToken {
@@ -59,6 +60,14 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model PersonalEntry {
+    id      String @id @default(cuid())
+    prompt  String
+    result  String
+    userId  String  @unique
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model WorkEntry {

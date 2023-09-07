@@ -1,75 +1,92 @@
-import { useSession } from "next-auth/react";
 import TextInput from "../form/TextInput";
-
 import { api } from "~/utils/api";
-import { inferProcedureOutput } from "@trpc/server";
-import { AppRouter } from "~/server/api/root";
-import { useEffect, useState } from "react";
+import GPTSection from "./GPTSection";
 
 export default function InformationForm() {
+  const { data, isLoading } = api.user.current.useQuery();
 
- 
+  const update = api.user.update.useMutation({
+    async onMutate({ data }) {
+      console.log(data);
+    },
+  });
 
-    const user = api.user.current.useQuery()
+  if(isLoading) {
+    return <p>Loading...</p>
+  }
 
-    const [ name, setName ] = useState('')
-    const [ phoneNumber, setPhoneNumber ] = useState('')
-    const [ email, setEmail ] = useState('')
+  const { name, phoneNumber, email, website } = data ?? {}
 
-    useEffect(() => {
-        setName(user.data?.name ?? '')
-        setPhoneNumber(user.data?.phoneNumber ?? '')
-        setEmail(user.data?.email ?? '')
-    }, [user.data])
+  return (
+    <div className="prose max-w-full">
+      <h1>Let's build your next CV</h1>
 
-    const update =  api.user.update.useMutation({
-        async onMutate({ data }) {
-            console.log(data) 
-        }
-    })
+      <div className="border-b border-gray-900/10 pb-12">
+        <h2 className="text-base font-semibold leading-7 text-gray-900">
+          Personal Information
+        </h2>
+        <p className="mt-1 text-sm leading-6 text-gray-600">
+          Start with some simple information.
+        </p>
+        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+          <div className="sm:col-span-6">
+            <TextInput
+              defaultValue={name ?? ''}
+              onBlur={(e) => {
+                update.mutate({ data: { name: e.currentTarget.value } });
+              }}
+              label="Enter your name"
+            />
+          </div>
 
+          <div className="sm:col-span-3">
+            <TextInput
+              defaultValue={phoneNumber ?? ''}
+              onBlur={(e) => {
+                update.mutate({ data: { phoneNumber: e.currentTarget.value } });
+              }}
+              label="Enter your Phone Number"
+            />
+          </div>
 
-    return (
-        <div className="prose max-w-full">
-            <h1 >Let's build your next CV</h1>
-            <div className="border-b border-gray-900/10 pb-12">
-                <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
-                <p className="mt-1 text-sm leading-6 text-gray-600">Start with some simple contact information.</p>
-
-                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    <div className="sm:col-span-6">
-                    <TextInput value={name}
-                        onChange={e => setName(e.target.value)} 
-                        onBlur={() => {
-                            update.mutate({ data: { name }})
-                        }}
-                        label='Enter your name' 
-                    />
-                    </div>
-
-                    <div className="sm:col-span-3">
-                    <TextInput value={phoneNumber}
-                        onChange={e => setPhoneNumber(e.target.value)} 
-                        onBlur={() => {
-                            update.mutate({ data: { phoneNumber }})
-                        }}
-                        label='Enter your Phone Number' 
-                    />
-                    </div>
-
-                    <div className="sm:col-span-3">
-                    <TextInput value={email}
-                        onChange={e => setEmail(e.target.value)} 
-                        onBlur={() => {
-                            update.mutate({ data: { email }})
-                        }}
-                        label='Enter your Email' 
-                    />
-                    </div>
-                </div>
-            </div>
-            
-           
+          <div className="sm:col-span-3">
+            <TextInput
+              defaultValue={email ?? ''}
+              onBlur={(e) => {
+                update.mutate({ data: { email: e.currentTarget.value } });
+              }}
+              label="Enter your Email"
+            />
+          </div>
+          <div className="sm:col-span-6">
+            <TextInput
+              defaultValue={website ?? ''}
+              onBlur={(e) => {
+                update.mutate({ data: { website: e.currentTarget.value } });
+              }}
+              label="Enter a Web Address"
+              placeholder="This could be a personal website or a LinkedIn profile"
+            />
+          </div>
         </div>
-    )
+      </div>
+
+      <div className="border-b border-gray-900/10 pb-12">
+        <h2 className="text-base font-semibold leading-7 text-gray-900">
+          Personal Section
+        </h2>
+        <p className="mt-1 text-sm leading-6 text-gray-600">
+          Add some information about who you are and what you do
+        </p>
+        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+          <div className="sm:col-span-6">
+            <GPTSection onPromptBlur={(e) => console.log(e.currentTarget.value)} />
+          </div>
+
+        
+        </div>
+      </div>
+
+    </div>
+  );
 }

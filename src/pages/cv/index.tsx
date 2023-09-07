@@ -10,9 +10,8 @@ const CV = function({ session }: SessionProps) {
 
     return (
         <DefaultLayout>
-            <div className="px-32 mt-48">
-            <InformationForm  /> 
-        
+            <div className="px-8 max-w-3xl mx-auto mt-48">
+                <InformationForm  />  
             </div>
         </DefaultLayout>
     )
