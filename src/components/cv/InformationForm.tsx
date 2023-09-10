@@ -1,6 +1,6 @@
 import TextInput from "../form/TextInput";
 import { api } from "~/utils/api";
-import GPTSection from "./GPTSection";
+import GPTSection from "../form/GPTSection";
 import PersonalSection from "./PersonalSection";
 
 export default function InformationForm() {

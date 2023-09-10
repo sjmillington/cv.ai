@@ -1,5 +1,5 @@
 import { DOMAttributes, FocusEventHandler, forwardRef, useEffect, useRef, useState } from "react"
-import Textarea from "../form/Textarea"
+import Textarea from "./Textarea"
 import { api } from "~/utils/api"
 
 interface GPTSectionProps {
@@ -15,8 +15,6 @@ export default function GPTSection({ onSaveState, prompt, results, isGenerating,
     const [ section, setSection ] = useState('')
     const promptRef = useRef<HTMLTextAreaElement>(null)
 
-    
- 
     useEffect(() => {
         setSection(results)
     }, [results])
