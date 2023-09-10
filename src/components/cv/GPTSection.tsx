@@ -3,41 +3,35 @@ import Textarea from "../form/Textarea"
 import { api } from "~/utils/api"
 
 interface GPTSectionProps {
-    onSaveState: (prompt: string | undefined, result: string | undefined) => void
+    onSaveState: (prompt: string | undefined, result: string | undefined) => void,
+    prompt: string,
+    results: string,
+    isGenerating: boolean,
+    onGenerateCalled: (prompt: string) => void
 }
 
-export default function GPTSection({ onSaveState }: GPTSectionProps) {
+export default function GPTSection({ onSaveState, prompt, results, isGenerating, onGenerateCalled }: GPTSectionProps) {
 
     const [ section, setSection ] = useState('')
     const promptRef = useRef<HTMLTextAreaElement>(null)
 
-    const { data, isLoading } = api.user.current.useQuery()
-    const { mutate: runGPT, isLoading: gptLoading } = api.user.generateGPT.useMutation({
-        async onSuccess(data: string) {
-            setSection(data)
-            onSaveState(undefined, data)
-        }
-    })
     
+ 
     useEffect(() => {
-        setSection(data?.personal?.result ?? '')
-    }, [data])
-
-    if(isLoading) {
-        return <div>Loading...</div>
-    }
+        setSection(results)
+    }, [results])
 
     return (
         <>
             <Textarea label='Prompt' 
-                      defaultValue={data?.personal?.prompt} 
+                      defaultValue={prompt} 
                       onBlur={e => onSaveState(e.currentTarget.value, undefined)} 
                       ref={promptRef}
                     />
             <button className="btn btn-primary float-right mt-4"
-                     onClick={() => void runGPT({ data:{ prompt: promptRef?.current?.value ?? ''}})}
+                     onClick={() => onGenerateCalled(promptRef?.current?.value ?? '')}
                      >
-                        { gptLoading && <span className="loading loading-spinner"></span>}
+                        { isGenerating && <span className="loading loading-spinner"></span>}
                         Generate
             </button>
             <Textarea label='Generated' 

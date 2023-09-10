@@ -1,6 +1,7 @@
 import TextInput from "../form/TextInput";
 import { api } from "~/utils/api";
 import GPTSection from "./GPTSection";
+import PersonalSection from "./PersonalSection";
 
 export default function InformationForm() {
   const { data, isLoading } = api.user.current.useQuery();
@@ -11,11 +12,7 @@ export default function InformationForm() {
     },
   });
 
-  const personalSectionMutation = api.user.personalSection.useMutation({
-    async onSuccess(data) {
-        console.log(data)
-    }
-})
+  
 
   if(isLoading) {
     return <p>Loading...</p>
@@ -77,7 +74,9 @@ export default function InformationForm() {
         </div>
       </div>
 
-      <div className="border-b border-gray-900/10 pb-12">
+      <PersonalSection />
+
+      {/* <div className="border-b border-gray-900/10 pb-12">
         <h2 className="text-base font-semibold leading-7 text-gray-900">
           Personal Section
         </h2>
@@ -86,7 +85,9 @@ export default function InformationForm() {
         </p>
         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
           <div className="sm:col-span-6">
-            <GPTSection onSaveState={(prompt, result) => {
+            <GPTSection 
+
+                onSaveState={(prompt, result) => {
                 personalSectionMutation.mutate({
                     data: {
                         prompt,
@@ -95,10 +96,10 @@ export default function InformationForm() {
                 })
             }} />
           </div>
-
-        
         </div>
-      </div>
+      </div> */}
+
+
 
     </div>
   );
