@@ -7,7 +7,6 @@ import {
 
 import openai from "~/server/openai/client"
 
-
 const PESONAL_SECTION_SYSTEM_STATEMENT = 'Use the folowing facts to create a short CV profile with no more than 50 words'
 
 export const userRouter = createTRPCRouter({
@@ -44,79 +43,77 @@ export const userRouter = createTRPCRouter({
         }),
     personalSection: protectedProcedure
         .input(z.object({ data: z.object({
-            
-            prompt: z.string(),
-            returnGPT: z.boolean()
+            prompt: z.string().optional(),
+            result: z.string().optional()
+            }) 
+        }))
+        .mutation(async ({ ctx, input}) => {
 
-        }) }))
+            const { prompt, result } = input.data
+
+            await ctx.prisma.personalEntry.upsert({
+                where: {
+                    userId: ctx.session.user.id
+                },
+                update: {
+                    result,
+                    prompt
+                },
+                create: {
+                    userId: ctx.session.user.id,
+                    prompt: prompt ?? '',
+                    result: result ?? ''
+                
+                }
+            })
+
+        }),
+    generateGPT: protectedProcedure
+        .input(z.object({ data: z.object({
+            prompt: z.string()
+            }) 
+        }))
         .mutation(async ({ ctx, input }) => {
 
-            const { prompt, returnGPT } = input.data
+            const { prompt } = input.data
 
-            const user = await ctx.prisma.user.findFirst({
-                include: {
-                    personal: true
-                },
-                where: {
-                    id: ctx.session.user.id
-                }
-            })
-
-            if(user === null) {
-                throw new Error('No user?!')
+            if(!prompt || prompt === '') {
+                throw new Error('invalid prompt')
             }
 
-            let personal = user?.personal ?? await ctx.prisma.personalEntry.create({
-                data: {
-                    userId: user.id,
-                    prompt,
-                    result: ''
-                }
-            })
+            const completion = await openai.chat.completions.create({
+                messages: [
+                    {
+                        role: 'system',
+                        content: PESONAL_SECTION_SYSTEM_STATEMENT
+                    },
+                    {
+                        role: 'user',
+                        content: `${prompt}`
+                    }
+                ],
+                model: 'gpt-3.5-turbo'
+            });
 
-            console.log(prompt)
+            const result = completion.choices[0]?.message.content
 
+            console.log(result)
+            if(result) {
 
-            let result = 'GPT Not Specified';
-
-            if(returnGPT) {
-                const completion = await openai.chat.completions.create({
-                    messages: [
-                        {
-                            role: 'system',
-                            content: PESONAL_SECTION_SYSTEM_STATEMENT
-                        },
-                        {
-                            role: 'user',
-                            content: `${prompt}`
-                        }
-                    ],
-                    model: 'gpt-3.5-turbo'
-                });
-
-                result = completion.choices[0]?.message.content ?? 'Unable to generate anything from this. Please try again.'
-
+              
                 await ctx.prisma.personalEntry.update({
                     where: {
-                        id: personal.id
+                        userId: ctx.session.user.id
                     },
                     data: {
-                        prompt,
-                        result
-                    }
-                })
-            } else {
-                await ctx.prisma.personalEntry.update({
-                    where: {
-                        id: personal.id
+                        result,
                     },
-                    data: {
-                        prompt
-                    }
                 })
+
+                return result;
             }
 
-
-            return result
+        
+            return 'Unable to generate anything from this. Please try again.'
         })
 });
