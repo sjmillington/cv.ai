@@ -74,8 +74,8 @@ model WorkEntry {
     id      String @id @default(cuid())
     role    String?
     company String?
-    start   String?
-    end     String?
+    start   DateTime? @db.Date
+    end     DateTime? @db.Date
     prompt  String
     result  String?
     userId  String

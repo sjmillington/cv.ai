@@ -2,9 +2,11 @@ import TextInput from "../form/TextInput";
 import { api } from "~/utils/api";
 import GPTSection from "../form/GPTSection";
 import PersonalSection from "./PersonalSection";
+import WorkExperienceSection from "./WorkExperienceSection";
 
 export default function InformationForm() {
-  const { data, isLoading } = api.user.current.useQuery();
+
+  const { data, isLoading, refetch } = api.user.current.useQuery();
 
   const update = api.user.update.useMutation({
     async onMutate({ data }) {
@@ -12,11 +14,17 @@ export default function InformationForm() {
     },
   });
 
-  
+  const { mutate: addEntry, isLoading: addingEntry } = api.user.addWorkEntry.useMutation({
+    async onSuccess(entry) {
+        refetch()
+    }
+  })
 
   if(isLoading) {
     return <p>Loading...</p>
   }
+
+  console.log(data)
 
   const { name, phoneNumber, email, website } = data ?? {}
 
@@ -75,29 +83,31 @@ export default function InformationForm() {
       </div>
 
       <PersonalSection />
+      
 
-      {/* <div className="border-b border-gray-900/10 pb-12">
+      <div className="border-b border-gray-900/10 pb-12">
         <h2 className="text-base font-semibold leading-7 text-gray-900">
-          Personal Section
+            Work Experience 
         </h2>
         <p className="mt-1 text-sm leading-6 text-gray-600">
-          Add some information about who you are and what you do
+            Add your experience. Start with the most recent.
         </p>
         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-          <div className="sm:col-span-6">
-            <GPTSection 
 
-                onSaveState={(prompt, result) => {
-                personalSectionMutation.mutate({
-                    data: {
-                        prompt,
-                        result
-                    }
-                })
-            }} />
-          </div>
+            {
+                data?.workEntries.map(entry => (
+                    <WorkExperienceSection key={entry.id} {...entry} />
+                ))
+            }
+            <button className="btn btn-primary mx-auto"
+                    onClick={() => void addEntry()}
+                     >
+                        { addingEntry && <span className="loading loading-spinner"></span>}
+                        Add Another
+            </button>
+
         </div>
-      </div> */}
+      </div>
 
 
 

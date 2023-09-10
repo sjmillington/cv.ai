@@ -55,7 +55,9 @@ export const userRouter = createTRPCRouter({
                     id: ctx.session.user.id
                 },
                 include: {
-                    personal: true
+                    personal: true,
+                    workEntries: true,
+                    educationEntries: true
                 }
             })
         }),
@@ -86,7 +88,7 @@ export const userRouter = createTRPCRouter({
             })
 
         }),
-    generateGPT: protectedProcedure
+    personalSectionGTP: protectedProcedure
         .input(z.object({ data: z.object({
             prompt: z.string()
             }) 
@@ -116,5 +118,39 @@ export const userRouter = createTRPCRouter({
 
         
             return 'Unable to generate anything from this. Please try again.'
+        }),
+    addWorkEntry: protectedProcedure
+        .mutation(async ({ ctx }) => {
+            
+            return await ctx.prisma.workEntry.create({
+                data: {
+                    prompt: '',
+                    userId: ctx.session.user.id
+                }
+            })
+        }),
+    updateWorkEntry: protectedProcedure
+        .input(z.object({ 
+            id: z.string(),
+            data: z.object({
+                role: z.string().optional(),
+                company: z.string().optional(),
+                start: z.date().optional(),
+                end: z.date().optional(),
+                prompt: z.string().optional(),
+                result: z.string().optional()
+            }) 
+        }))
+        .mutation(async ({ ctx, input }) => {
+
+            const { id, data } = input
+
+            return await ctx.prisma.workEntry.update({
+                where: {
+                    id
+                },
+                data
+            })
+            
         })
 });

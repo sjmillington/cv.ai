@@ -13,7 +13,7 @@ export default function PersonalFunction() {
         }
     })
 
-    const { mutate: runGPT, isLoading } = api.user.generateGPT.useMutation({
+    const { mutate: runGPT, isLoading } = api.user.personalSectionGTP.useMutation({
         async onSuccess(result: string) {
             refetch() //todo - this could be done with setData, but i'm being lazy
         }
@@ -22,10 +22,10 @@ export default function PersonalFunction() {
     return (
         <div className="border-b border-gray-900/10 pb-12">
             <h2 className="text-base font-semibold leading-7 text-gray-900">
-            Work Experience
+            Personal Section
             </h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
-            Add your experience. Start with the most recent.
+            Add some information about who you are and what you do
             </p>
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
             <div className="sm:col-span-6">
