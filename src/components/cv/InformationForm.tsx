@@ -11,6 +11,12 @@ export default function InformationForm() {
     },
   });
 
+  const personalSectionMutation = api.user.personalSection.useMutation({
+    async onSuccess(data) {
+        console.log(data)
+    }
+})
+
   if(isLoading) {
     return <p>Loading...</p>
   }
@@ -80,7 +86,14 @@ export default function InformationForm() {
         </p>
         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
           <div className="sm:col-span-6">
-            <GPTSection onPromptBlur={(e) => console.log(e.currentTarget.value)} />
+            <GPTSection onSaveState={(prompt, result) => {
+                personalSectionMutation.mutate({
+                    data: {
+                        prompt,
+                        result
+                    }
+                })
+            }} />
           </div>
 
         

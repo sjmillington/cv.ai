@@ -9,6 +9,24 @@ import openai from "~/server/openai/client"
 
 const PESONAL_SECTION_SYSTEM_STATEMENT = 'Use the folowing facts to create a short CV profile with no more than 50 words'
 
+const runGTP = async (prompt: string, statement: string): Promise<string | undefined> => {
+    const completion = await openai.chat.completions.create({
+        messages: [
+            {
+                role: 'system',
+                content: statement
+            },
+            {
+                role: 'user',
+                content: `${prompt}`
+            }
+        ],
+        model: 'gpt-3.5-turbo'
+    });
+
+    return completion.choices[0]?.message.content ?? undefined
+}
+
 export const userRouter = createTRPCRouter({
     update: protectedProcedure
         .input(z.object({ data: z.object({
@@ -81,26 +99,9 @@ export const userRouter = createTRPCRouter({
                 throw new Error('invalid prompt')
             }
 
-            const completion = await openai.chat.completions.create({
-                messages: [
-                    {
-                        role: 'system',
-                        content: PESONAL_SECTION_SYSTEM_STATEMENT
-                    },
-                    {
-                        role: 'user',
-                        content: `${prompt}`
-                    }
-                ],
-                model: 'gpt-3.5-turbo'
-            });
-
-            const result = completion.choices[0]?.message.content
-
-            console.log(result)
-            if(result) {
-
-              
+            const result = await runGTP(prompt, PESONAL_SECTION_SYSTEM_STATEMENT)
+        
+            if(result) {              
                 await ctx.prisma.personalEntry.update({
                     where: {
                         userId: ctx.session.user.id

@@ -3,10 +3,10 @@ import Textarea from "../form/Textarea"
 import { api } from "~/utils/api"
 
 interface GPTSectionProps {
-    onPromptBlur: FocusEventHandler<HTMLTextAreaElement>
+    onSaveState: (prompt: string | undefined, result: string | undefined) => void
 }
 
-export default function GPTSection({ onPromptBlur }: GPTSectionProps) {
+export default function GPTSection({ onSaveState }: GPTSectionProps) {
 
     const [ section, setSection ] = useState('')
     const promptRef = useRef<HTMLTextAreaElement>(null)
@@ -14,20 +14,14 @@ export default function GPTSection({ onPromptBlur }: GPTSectionProps) {
     const { data, isLoading } = api.user.current.useQuery()
     const { mutate: runGPT, isLoading: gptLoading } = api.user.generateGPT.useMutation({
         async onSuccess(data: string) {
-            console.log(data)
             setSection(data)
+            onSaveState(undefined, data)
         }
     })
     
     useEffect(() => {
         setSection(data?.personal?.result ?? '')
     }, [data])
-
-    const mutation = api.user.personalSection.useMutation({
-        async onSuccess(data) {
-            console.log(data)
-        }
-    })
 
     if(isLoading) {
         return <div>Loading...</div>
@@ -37,12 +31,7 @@ export default function GPTSection({ onPromptBlur }: GPTSectionProps) {
         <>
             <Textarea label='Prompt' 
                       defaultValue={data?.personal?.prompt} 
-                      onBlur={e => mutation.mutate({
-                            data: {
-                                prompt: e.currentTarget?.value ?? '',
-                            }
-                        })
-                      } 
+                      onBlur={e => onSaveState(e.currentTarget.value, undefined)} 
                       ref={promptRef}
                     />
             <button className="btn btn-primary float-right mt-4"
@@ -54,11 +43,7 @@ export default function GPTSection({ onPromptBlur }: GPTSectionProps) {
             <Textarea label='Generated' 
                         value={section} 
                         onChange={(e) => setSection(e.target.value)} 
-                        onBlur={(e) => mutation.mutate({
-                            data: {
-                                result: e.currentTarget.value ?? ''
-                            }
-                        })}
+                        onBlur={(e) => onSaveState(undefined, e.currentTarget.value)}
                     />
         </>
     )
