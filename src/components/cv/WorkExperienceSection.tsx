@@ -41,6 +41,12 @@ export default function WorkExperienceSection({
             refetch()
         }
     })
+    
+    const { mutate: deleteEntry, isLoading: deleting } = api.user.deleteWorkEntry.useMutation({
+        onSuccess() {
+            refetch()
+        }
+    })
 
     return (
         <>
@@ -108,6 +114,14 @@ export default function WorkExperienceSection({
                 }}
              />
 
+           </div>
+           <div className="sm:col-span-6">
+                <button className="btn btn-error btn-outline float-right mt-4"
+                        onClick={() => deleteEntry({ id })}
+                        >
+                            { deleting && <span className="loading loading-spinner"></span>}
+                            Delete
+                </button>
            </div>
             <div className="border-b border-gray-900/10 pb-12 sm:col-span-6"></div>
         </>

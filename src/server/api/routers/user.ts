@@ -134,6 +134,19 @@ export const userRouter = createTRPCRouter({
                 }
             })
         }),
+    deleteWorkEntry: protectedProcedure
+        .input(z.object({
+            id: z.string()
+        }))
+        .mutation(async ({ ctx, input: { id } }) => {
+
+            await ctx.prisma.workEntry.delete({
+                where: {
+                    id
+                }
+            })
+
+        }),
     updateWorkEntry: protectedProcedure
         .input(z.object({ 
             id: z.string(),
