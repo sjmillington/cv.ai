@@ -24,8 +24,6 @@ export default function InformationForm() {
     return <p>Loading...</p>
   }
 
-  console.log(data)
-
   const { name, phoneNumber, email, website } = data ?? {}
 
   return (
@@ -96,13 +94,12 @@ export default function InformationForm() {
 
             {
                 data?.workEntries.map(entry => {
-                    console.log(entry)
                     return (
                         <WorkExperienceSection key={entry.id} refetch={() => refetch()} {...entry} />
                     )
                 })
             }
-            <button className="btn btn-primary mx-auto"
+            <button className="btn btn-primary btn-outline w-48 mx-auto"
                     onClick={() => void addEntry()}
                      >
                         { addingEntry && <span className="loading loading-spinner"></span>}
