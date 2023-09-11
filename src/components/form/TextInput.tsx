@@ -16,7 +16,7 @@ export default function TextInput({ label, altLabel, ref, ...rest }: TextInputPr
         {
             altLabel && (
                 <label className="label">
-                    <span className="label-text-alt base-300">{altLabel}</span>
+                    <span className="label-text-alt text-gray-400">{altLabel}</span>
                 </label>
             )
         }

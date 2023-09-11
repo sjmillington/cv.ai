@@ -8,6 +8,7 @@ import {
 import openai from "~/server/openai/client"
 
 const PESONAL_SECTION_SYSTEM_STATEMENT = 'Use the folowing facts to create a short CV profile with no more than 50 words'
+const WORK_ENTRY_SYSTEM_STATEMENT = 'Use the following facts to create a CV work section. Format into bullet points. Use a maximum of 3 bullet points. Each bullet point should be less than 30 words.'
 
 const runGTP = async (prompt: string, statement: string): Promise<string | undefined> => {
     const completion = await openai.chat.completions.create({
@@ -56,9 +57,13 @@ export const userRouter = createTRPCRouter({
                 },
                 include: {
                     personal: true,
-                    workEntries: true,
+                    workEntries: {
+                        orderBy: {
+                            start: 'desc'
+                        }
+                    },
                     educationEntries: true
-                }
+                },
             })
         }),
     personalSection: protectedProcedure
@@ -152,5 +157,38 @@ export const userRouter = createTRPCRouter({
                 data
             })
             
-        })
+        }),
+    workEntryGPT: protectedProcedure
+        .input(z.object({ 
+            id: z.string(),
+            data: z.object({
+                prompt: z.string()
+            }) 
+        }))
+        .mutation(async ({ ctx, input }) => {
+
+            const { prompt } = input.data
+
+            if(!prompt || prompt === '') {
+                throw new Error('invalid prompt')
+            }
+
+            const result = await runGTP(prompt, WORK_ENTRY_SYSTEM_STATEMENT)
+        
+            if(result) {              
+                await ctx.prisma.workEntry.update({
+                    where: {
+                        id: input.id
+                    },
+                    data: {
+                        result,
+                    },
+                })
+
+                return result;
+            }
+
+        
+            return 'Unable to generate anything from this. Please try again.'
+        }),
 });

@@ -92,12 +92,15 @@ export default function InformationForm() {
         <p className="mt-1 text-sm leading-6 text-gray-600">
             Add your experience. Start with the most recent.
         </p>
-        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
             {
-                data?.workEntries.map(entry => (
-                    <WorkExperienceSection key={entry.id} {...entry} />
-                ))
+                data?.workEntries.map(entry => {
+                    console.log(entry)
+                    return (
+                        <WorkExperienceSection key={entry.id} refetch={() => refetch()} {...entry} />
+                    )
+                })
             }
             <button className="btn btn-primary mx-auto"
                     onClick={() => void addEntry()}
