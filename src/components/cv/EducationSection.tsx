@@ -50,7 +50,7 @@ export default function EducationSection() {
                 <TextInput
                     defaultValue={data?.education?.institution ?? ''}
                     onBlur={(e) => {
-                        update.mutate({ data: { course: e.currentTarget.value } });
+                        update.mutate({ data: { institution: e.currentTarget.value } });
                     }}
                     label="Institution"
                 />
