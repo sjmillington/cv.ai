@@ -3,11 +3,12 @@ import { forwardRef, useEffect } from "react";
 interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
     label: string,
     altLabel?: string,
+    className?: string
 }
 
 
 
-export default forwardRef(function TextArea({ label, altLabel, ...rest }: TextAreaProps, ref: React.Ref<HTMLTextAreaElement>) {
+export default forwardRef(function TextArea({ label, altLabel, className='', ...rest }: TextAreaProps, ref: React.Ref<HTMLTextAreaElement>) {
 
     return (
         <div className="form-control w-full">
@@ -17,7 +18,7 @@ export default forwardRef(function TextArea({ label, altLabel, ...rest }: TextAr
                 </span>
             </label>
             <textarea placeholder={label}
-                      className="textarea textarea-bordered textarea-lg w-full no-scroll"
+                      className={`textarea textarea-bordered min-h-128 textarea-lg w-full no-scroll ${className}`}
                        ref={ref} 
                        {...rest} 
                        />

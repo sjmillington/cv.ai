@@ -12,7 +12,8 @@ interface GPTSectionProps {
 
 const useAutosizeTextArea = (
     textAreaRef: HTMLTextAreaElement | null,
-    value: string
+    value: string,
+    paddingBottom: number,
   ) => {
     useEffect(() => {
       if (textAreaRef) {
@@ -22,7 +23,7 @@ const useAutosizeTextArea = (
   
         // We then set the height directly, outside of the render loop
         // Trying to set this with state or a ref will product an incorrect value.
-        textAreaRef.style.height = scrollHeight + "px";
+        textAreaRef.style.height = paddingBottom + scrollHeight + "px";
       }
     }, [textAreaRef, value]);
   };
@@ -37,22 +38,25 @@ export default function GPTSection({ onSaveState, prompt, results, isGenerating,
         setSection(results)
     }, [results])
 
-    useAutosizeTextArea(promptRef.current, prompt)
-    useAutosizeTextArea(generateRef.current, section)
+    useAutosizeTextArea(promptRef.current, prompt, 30)
+    useAutosizeTextArea(generateRef.current, section, 0)
 
     return (
         <>
-            <Textarea label='Prompt' 
-                      defaultValue={prompt} 
-                      onBlur={e => onSaveState(e.currentTarget.value, undefined)} 
-                      ref={promptRef}
-                    />
-            <button className="btn btn-primary float-right mt-4"
-                     onClick={() => onGenerateCalled(promptRef?.current?.value ?? '')}
+            <div className='relative min-h-128'>
+              <Textarea label='Prompt' 
+                        defaultValue={prompt} 
+                        onBlur={e => onSaveState(e.currentTarget.value, undefined)} 
+                        ref={promptRef}
+                        className='relative'
+                      />
+              <button className="btn btn-primary absolute bottom-2 right-2"
+                      onClick={() => onGenerateCalled(promptRef?.current?.value ?? '')}
                      >
                         { isGenerating && <span className="loading loading-spinner"></span>}
                         Generate
-            </button>
+              </button>
+            </div>
             <Textarea label='Generated' 
                         value={section} 
                         ref={generateRef}

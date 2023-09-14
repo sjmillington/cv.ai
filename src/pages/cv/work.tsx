@@ -1,4 +1,4 @@
-import Link from "next/link";
+import CVFormLayout from "~/components/cv/CVFormLayout";
 import WorkExperienceSection from "~/components/cv/WorkExperienceSection";
 import withProtection, { SessionProps } from "~/components/hoc/withProtection";
 import DefaultLayout from "~/layouts/layout";
@@ -21,39 +21,28 @@ const CV = function({ session }: SessionProps) {
 
     return (
         <DefaultLayout>
-            <div className="px-8 max-w-3xl mx-auto mt-48 prose">
-                <h1>Now, let's add some work experience</h1>
-
-                <div className="border-b border-gray-900/10 pb-12">
-                    <p className="mt-1 text-sm leading-6 text-gray-600">
-                        Start with the most recent.
-                    </p>
-                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-
-                        {
-                            data?.workEntries.map(entry => {
-                                return (
-                                    <WorkExperienceSection key={entry.id} refetch={() => refetch()} {...entry} />
-                                )
-                            })
-                        }
-                        <button className="btn btn-primary btn-outline w-48 mx-auto"
-                                onClick={() => void addEntry()}
-                                >
-                                    { addingEntry && <span className="loading loading-spinner"></span>}
-                                    Add Another
-                        </button>
-
-                    </div>
-                </div>  
-                <Link href={'/cv/education'}>
-                    <button className="btn btn-primary float-right">
-                        Next
+            <CVFormLayout 
+                title="Now, let's add some work experience"
+                nextLink='/cv/education'
+                subTitle='Start with the most recent.'
+                progress='Work'
+            >
+                <>
+                    {
+                        data?.workEntries.map((entry, i) => {
+                            return (
+                                <WorkExperienceSection index={i+1} key={entry.id} refetch={() => refetch()} {...entry} />
+                            )
+                        })
+                    }
+                    <button className="btn btn-primary btn-outline w-48 mx-auto"
+                            onClick={() => void addEntry()}
+                            >
+                                { addingEntry && <span className="loading loading-spinner"></span>}
+                                Add Another
                     </button>
-                </Link>
-            </div>
-            
-            
+                </>
+            </CVFormLayout>
         </DefaultLayout>
     )
 }

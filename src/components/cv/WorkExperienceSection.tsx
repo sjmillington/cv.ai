@@ -11,6 +11,7 @@ interface Exprience  {
     end: Date | null;
     prompt: string;
     result: string | null,
+    index: number,
     refetch: () => {}
 }
 
@@ -27,6 +28,7 @@ export default function WorkExperienceSection({
     end,
     prompt,
     result,
+    index,
     refetch
 }: Exprience) {
 
@@ -50,6 +52,7 @@ export default function WorkExperienceSection({
 
     return (
         <>
+            <h3 className='sm:col-span-6'>Position {index}</h3>
             <div className="sm:col-span-3">
                 <TextInput
                     defaultValue={company ?? ''}
@@ -120,7 +123,7 @@ export default function WorkExperienceSection({
                         onClick={() => deleteEntry({ id })}
                         >
                             { deleting && <span className="loading loading-spinner"></span>}
-                            Delete
+                            Remove
                 </button>
            </div>
             <div className="border-b border-gray-900/10 pb-12 sm:col-span-6"></div>
