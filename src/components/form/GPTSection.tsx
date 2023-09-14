@@ -1,6 +1,5 @@
-import { DOMAttributes, FocusEventHandler, forwardRef, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Textarea from "./Textarea"
-import { api } from "~/utils/api"
 
 interface GPTSectionProps {
     onSaveState: (prompt: string | undefined, result: string | undefined) => void,
@@ -38,12 +37,12 @@ export default function GPTSection({ onSaveState, prompt, results, isGenerating,
         setSection(results)
     }, [results])
 
-    useAutosizeTextArea(promptRef.current, prompt, 30)
+    useAutosizeTextArea(promptRef.current, prompt, 60)
     useAutosizeTextArea(generateRef.current, section, 0)
 
     return (
         <>
-            <div className='relative min-h-128'>
+            <div className='relative min-h-128 mb-4'>
               <Textarea label='Prompt' 
                         defaultValue={prompt} 
                         onBlur={e => onSaveState(e.currentTarget.value, undefined)} 

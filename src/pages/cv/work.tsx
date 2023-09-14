@@ -23,7 +23,7 @@ const CV = function({ session }: SessionProps) {
         <DefaultLayout>
             <CVFormLayout 
                 title="Now, let's add some work experience"
-                nextLink='/cv/education'
+                nextLink='/cv/education-skills'
                 subTitle='Start with the most recent.'
                 progress='Work'
             >

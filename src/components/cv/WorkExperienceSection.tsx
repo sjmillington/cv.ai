@@ -1,3 +1,4 @@
+import { formatMonthYearDate } from "~/utils/formatters";
 import GPTSection from "../form/GPTSection";
 import TextInput from "../form/TextInput";
 
@@ -15,9 +16,7 @@ interface Exprience  {
     refetch: () => {}
 }
 
-const formatDate = (date: Date) => {
-    return `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? '0' : ''}${date.getMonth()+1}`
-}
+
 
 
 export default function WorkExperienceSection({
@@ -75,7 +74,7 @@ export default function WorkExperienceSection({
 
            <div className="sm:col-span-3">
              <TextInput
-               defaultValue={start ? formatDate(start) : ''}
+               defaultValue={start ? formatMonthYearDate(start) : ''}
                onBlur={(e) => {
                     console.log(e)
                     if(e.currentTarget.valueAsDate instanceof Date) {
@@ -89,7 +88,7 @@ export default function WorkExperienceSection({
 
            <div className="sm:col-span-3">
              <TextInput
-               defaultValue={end ? formatDate(end) : ''}
+               defaultValue={end ? formatMonthYearDate(end) : ''}
                onBlur={(e) => {
                 if(e.currentTarget.valueAsDate instanceof Date) {
                     update.mutate({ id, data: { end: e.currentTarget.valueAsDate } });

@@ -31,7 +31,7 @@ const CV = function({ session }: SessionProps) {
                 progress='Personal'
             >
                 <>
-                <div className="sm:col-span-6">
+                        <div className="sm:col-span-6">
                             <TextInput
                             defaultValue={name ?? ''}
                             onBlur={(e) => {
@@ -70,8 +70,10 @@ const CV = function({ session }: SessionProps) {
                             placeholder="This could be a personal website or a LinkedIn profile"
                             />
                         </div>
-
+                        <div className='sm:col-span-6'>
                         <PersonalSection />
+                        </div>
+
                 </>
 
             </CVFormLayout>

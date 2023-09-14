@@ -46,7 +46,7 @@ model User {
     accounts      Account[]
     sessions      Session[]
     workEntries   WorkEntry[]
-    educationEntries EducationEntry[]
+    education   EducationEntry?
     phoneNumber   String?
     website       String?
     skills      String[]
@@ -85,11 +85,12 @@ model WorkEntry {
 model EducationEntry {
     id      String @id @default(cuid())
     course    String?
-    institute String?
-    start   String?
-    end     String?
+    institution String?
+    start   DateTime? @db.Date
+    end     DateTime? @db.Date
+    grade   String?
     prompt  String
     result  String?
-    userId  String
+    userId  String @unique
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

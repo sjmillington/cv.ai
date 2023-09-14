@@ -8,7 +8,8 @@ import {
 import openai from "~/server/openai/client"
 
 const PESONAL_SECTION_SYSTEM_STATEMENT = 'Use the folowing facts to create a short CV profile with no more than 50 words'
-const WORK_ENTRY_SYSTEM_STATEMENT = 'Use the following facts to create a CV work section. Format into bullet points. Use a maximum of 3 bullet points. Each bullet point should be less than 30 words.'
+const WORK_ENTRY_SYSTEM_STATEMENT = 'Use the following facts to create a CV work section. Format into an bullet pointed list. Use a maximum of 3 bullet points. Each bullet point should be less than 30 words.'
+const EDUCATION_SYSTEM_STATEMENT = 'Use the following facts to create a CV university section. Format into an bullet pointed list with a maximum of 3 bullet points. Each bullet point should be less than 30 words.'
 
 const runGTP = async (prompt: string, statement: string): Promise<string | undefined> => {
     const completion = await openai.chat.completions.create({
@@ -62,7 +63,7 @@ export const userRouter = createTRPCRouter({
                             start: 'desc'
                         }
                     },
-                    educationEntries: true
+                    education: true
                 },
             })
         }),
@@ -194,6 +195,92 @@ export const userRouter = createTRPCRouter({
                         id: input.id
                     },
                     data: {
+                        result,
+                    },
+                })
+
+                return result;
+            }
+
+        
+            return 'Unable to generate anything from this. Please try again.'
+        }),
+    education: protectedProcedure
+        .input(z.object({ 
+            data: z.object({
+                course: z.string().optional(),
+                institution: z.string().optional(),
+                start: z.date().optional(),
+                end: z.date().optional(),
+                prompt: z.string().optional(),
+                result: z.string().optional(),
+                grade: z.string().optional()
+            }) 
+        }))
+        .mutation(async ({ ctx, input }) => {
+
+            const { 
+                course, 
+                institution,
+                start,
+                end,
+                prompt,
+                result,
+                grade
+            
+            } = input.data
+
+            await ctx.prisma.educationEntry.upsert({
+                where: {
+                    userId: ctx.session.user.id
+                },
+                update: {
+                    course,
+                    institution,
+                    start,
+                    end,
+                    prompt,
+                    result,
+                    grade
+                },
+                create: {
+                    userId: ctx.session.user.id,
+                    course,
+                    institution,
+                    start,
+                    end,
+                    grade,
+                    prompt: prompt ?? '',
+                    result
+                }
+            })
+
+        }),
+    educationGTP: protectedProcedure
+        .input(z.object({ 
+            data: z.object({
+                prompt: z.string()
+            }) 
+        }))
+        .mutation(async ({ ctx, input }) => {
+
+            const { prompt } = input.data
+
+            if(!prompt || prompt === '') {
+                throw new Error('invalid prompt')
+            }
+
+            const result = await runGTP(prompt, EDUCATION_SYSTEM_STATEMENT)
+
+            console.log(result)
+        
+            if(result) {              
+                await ctx.prisma.educationEntry.update({
+                    where: {
+                        userId: ctx.session.user.id
+                    },
+                    data: {
+                        prompt,
                         result,
                     },
                 })
