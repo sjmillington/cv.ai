@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import { PDFDocument, PDFFont, PDFPage, PageSizes, StandardFonts, rgb } from "pdf-lib";
+import { PDFDocument, PDFFont, PDFPage, PageSizes, StandardFonts, TextAlignment, layoutMultilineText, rgb } from "pdf-lib";
 import { RouterOutputs } from "~/utils/api";
 
 const primaryColor = rgb(87/255, 13/255, 248/255)
@@ -7,6 +7,8 @@ const black = rgb(0.1, 0.1, 0.1)
 
 const fontSize = 16
 const bodySize = 12
+
+const margins = 30;
 
 const saveByteArray = (reportName: string, byte: Uint8Array) => {
     var blob = new Blob([byte], {type: "application/pdf"});
@@ -42,58 +44,79 @@ export default async function generate(user: RouterOutputs['user']['current']) {
 
     const contact = [user.phoneNumber, user.email, user.website].filter(c => c !== null && c !== undefined).join(' | ')
 
-    let lineHeight = height - 2 * bodySize;
+    let cursor = height - 2 * bodySize;
 
     page.drawText(contact, {
         x: getCenteredTextX(contact, bodySize, page, font),
-        y: lineHeight,
+        y: cursor,
         size: bodySize,
         font: font,
         color: black,
     })
 
-    lineHeight -= 2 * fontSize;
+    cursor -= 2 * fontSize;
   
     page.drawText(name.toUpperCase(), {
         x: getCenteredTextX(name.toUpperCase(), fontSize, page, font),
-        y: lineHeight,
+        y: cursor,
         size: fontSize,
         font: font,
         color: primaryColor,
     })
 
-    lineHeight -= fontSize
+    cursor -= fontSize
 
     page.drawLine({
-        start: { x: 40, y: lineHeight},
-        end: { x: width - 40, y: lineHeight },
+        start: { x: 30, y: cursor},
+        end: { x: width - 30, y: cursor },
         thickness: 1,
         color: rgb(0.6, 0.6, 0.6),
         dashArray: [4,4]
       })
 
- 
 
     if(user.personal?.result) {
 
-        lineHeight -= fontSize
+        cursor -= fontSize
 
-        //todo!
-        page.drawText(user.personal?.result, {
-            x: getCenteredTextX(user.personal?.result, bodySize, page, font),
-            y: lineHeight,
-            maxWidth: 200,
-            size: bodySize,
-            font: font,
-            color: black,
+        const { result } = user.personal
+
+        const lineWidth = font.widthOfTextAtSize(result, fontSize);
+        const height = font.heightAtSize(fontSize);
+        const lineHeight = height + height * 0.2;
+
+        const personalSectionHeight = (lineWidth / width) * lineHeight
+
+        const { lines } = layoutMultilineText(result, {
+            alignment: TextAlignment.Center,
+            font,
+            fontSize: bodySize,
+            bounds: {
+                x: 30,
+                y: cursor - personalSectionHeight,
+                width: width - 60,
+                height: personalSectionHeight
+            }
         })
+
+        lines?.forEach(line => {
+            page.drawText(line.text, {
+                x: line.x, 
+                y: line.y,
+                size: bodySize,
+                font: font,
+                color: black,
+            })
+        })
+
+        cursor - personalSectionHeight;
 
     }
 
  
 
     console.log('saving')
-    const bytes = await pdfDoc.save()
+    return await pdfDoc.saveAsBase64({ dataUri: true })
 
-    saveByteArray(`${name}-CV.pdf`, bytes)
+   // saveByteArray(`${name}-CV.pdf`, bytes)
 }
