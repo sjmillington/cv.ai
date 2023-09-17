@@ -35,7 +35,8 @@ export const userRouter = createTRPCRouter({
             name: z.string().optional(),
             phoneNumber: z.string().optional(),
             email: z.string().optional(),
-            website: z.string().optional()
+            website: z.string().optional(),
+            skills: z.array(z.string()).optional()
         }) }))
         .mutation(({ ctx, input }) => {
 
