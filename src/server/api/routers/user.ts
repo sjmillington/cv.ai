@@ -1,3 +1,4 @@
+import { ChatCompletionMessageParam } from "openai/resources/chat";
 import { z } from "zod";
 
 import {
@@ -7,17 +8,51 @@ import {
 
 import openai from "~/server/openai/client"
 
-const PESONAL_SECTION_SYSTEM_STATEMENT = 'Use the folowing facts to create a short CV profile with no more than 50 words'
-const WORK_ENTRY_SYSTEM_STATEMENT = 'Use the following facts to create a CV work section. Format into an bullet pointed list. Use a maximum of 3 bullet points. Each bullet point should be less than 30 words.'
-const EDUCATION_SYSTEM_STATEMENT = 'Use the following facts to create a CV university section. Format into an bullet pointed list with a maximum of 3 bullet points. Each bullet point should be less than 30 words.'
+const BULLETPOINT_FORMAT_PARAMS = [
+    {
+        role: 'system',
+        content: 'Return all answers as a bullet pointed list.'
+    },
+    {
+        role: 'system',
+        content: 'Use 3 or 4 bullet points for the answer.'
+    },
+    {
+        role: 'system',
+        content: 'Each bullet point should be less than 40 words.'
+    }
+] satisfies ChatCompletionMessageParam[]
 
-const runGTP = async (prompt: string, statement: string): Promise<string | undefined> => {
+const PERSONAL_SECTION_PARAMS = [
+    {
+        role: 'system',
+        content: 'Use the folowing facts to create a short CV profile with no more than 70 words'
+    }
+] satisfies ChatCompletionMessageParam[]
+
+const WORK_ENTRY_SECTION_PARAMS = [
+    {
+        role: 'system',
+        content: 'Use the following facts to create a CV work section.'
+    }
+] satisfies ChatCompletionMessageParam[]
+
+const EDUCATION_SECTION_PARAMS = [
+    {
+        role: 'system',
+        content: 'Use the following facts to create a CV university section. '
+    }
+] satisfies ChatCompletionMessageParam[]
+
+const runGTP = async (prompt: string, statements: ChatCompletionMessageParam[]): Promise<string | undefined> => {
     const completion = await openai.chat.completions.create({
         messages: [
-            {
-                role: 'system',
-                content: statement
-            },
+            ...statements,
+            // {
+            //     role: 'system',
+            //     content: statement
+            // },
+        
             {
                 role: 'user',
                 content: `${prompt}`
@@ -61,8 +96,11 @@ export const userRouter = createTRPCRouter({
                     personal: true,
                     workEntries: {
                         orderBy: {
-                            start: 'desc'
-                        }
+                            start: {
+                                sort: 'desc',
+                                nulls: 'last'
+                            }
+                        },
                     },
                     education: true
                 },
@@ -108,7 +146,7 @@ export const userRouter = createTRPCRouter({
                 throw new Error('invalid prompt')
             }
 
-            const result = await runGTP(prompt, PESONAL_SECTION_SYSTEM_STATEMENT)
+            const result = await runGTP(prompt, PERSONAL_SECTION_PARAMS)
         
             if(result) {              
                 await ctx.prisma.personalEntry.update({
@@ -188,7 +226,7 @@ export const userRouter = createTRPCRouter({
                 throw new Error('invalid prompt')
             }
 
-            const result = await runGTP(prompt, WORK_ENTRY_SYSTEM_STATEMENT)
+            const result = await runGTP(prompt, [ ...BULLETPOINT_FORMAT_PARAMS, ...WORK_ENTRY_SECTION_PARAMS])
         
             if(result) {              
                 await ctx.prisma.workEntry.update({
@@ -271,7 +309,7 @@ export const userRouter = createTRPCRouter({
                 throw new Error('invalid prompt')
             }
 
-            const result = await runGTP(prompt, EDUCATION_SYSTEM_STATEMENT)
+            const result = await runGTP(prompt, [ ...BULLETPOINT_FORMAT_PARAMS, ...EDUCATION_SECTION_PARAMS])
 
             console.log(result)
         

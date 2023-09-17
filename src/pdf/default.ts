@@ -1,12 +1,12 @@
-import { PDFDocument, PDFFont, PDFPage, PageSizes, StandardFonts, TextAlignment, layoutMultilineText, rgb } from "pdf-lib";
+import { PDFDocument, PDFFont, PDFPage, PageSizes, RGB, StandardFonts, TextAlignment, layoutMultilineText, rgb } from "pdf-lib";
 import { RouterOutputs } from "~/utils/api";
 
 const primaryColor = rgb(87/255, 13/255, 248/255)
 const black = rgb(0.2, 0.2, 0.2)
 
 const mainTitleSize = 16
-const minorTitleSize = 12
-const bodySize = 11
+const minorTitleSize = 14
+const bodySize = 12
 
 const margins = 50;
 
@@ -15,15 +15,6 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep
 const formatDate = (date: Date) => {
     return `${monthNames[date.getMonth()]} ${date.getFullYear()}`
 }
-
-const saveByteArray = (reportName: string, byte: Uint8Array) => {
-    var blob = new Blob([byte], {type: "application/pdf"});
-    var link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    var fileName = reportName;
-    link.download = fileName;
-    link.click();
-};
 
 const getCenteredTextX = (value: string, textSize: number, page: PDFPage, font: PDFFont) => {
     const textWidth = font.widthOfTextAtSize(value, textSize);
@@ -36,22 +27,24 @@ interface MultilineSectionProps {
     page: PDFPage,
     text: string,
     font: PDFFont,
+    fontSize: number,
+    color: RGB,
     width: number,
     alignment: TextAlignment
     cursor: number
 }
 
 const drawMultilineSection = ({
-    page, text, font, width, cursor, alignment
+    page, text, font, width, cursor, alignment, fontSize, color
  }: MultilineSectionProps) => {
-    const lineWidth = font.widthOfTextAtSize(text, bodySize);
+    const lineWidth = font.widthOfTextAtSize(text, fontSize);
     
-    const sectionHeight = Math.ceil(lineWidth / (width - 2 * margins)) * 1.2 * font.heightAtSize(bodySize)
+    const sectionHeight = Math.ceil(lineWidth / (width - 2 * margins)) * 1.2 * font.heightAtSize(fontSize)
 
     const { lines } = layoutMultilineText(text, {
         alignment,
         font,
-        fontSize: bodySize,
+        fontSize: fontSize,
         bounds: {
             x: margins,
             y: cursor - sectionHeight,
@@ -64,9 +57,9 @@ const drawMultilineSection = ({
         page.drawText(line.text, {
             x: line.x, 
             y: line.y,
-            size: bodySize,
-            font: font,
-            color: black,
+            size: fontSize,
+            font,
+            color,
         })
     })
 
@@ -135,7 +128,9 @@ export default async function generate(user: RouterOutputs['user']['current']) {
             width,
             alignment: TextAlignment.Center,
             cursor,
-            font
+            font,
+            fontSize: bodySize,
+            color: black
         })
 
     }
@@ -179,19 +174,19 @@ export default async function generate(user: RouterOutputs['user']['current']) {
                     width,
                     alignment: TextAlignment.Left,
                     cursor,
-                    font
+                    font,
+                    fontSize: bodySize,
+                    color: black
                 })
 
             }
 
-            cursor -= mainTitleSize
+            cursor -= (2*mainTitleSize)
 
         }
 
         //Education
         if(user.education) {
-
-            cursor -= 2 * mainTitleSize
 
             page.drawText('EDUCATION', {
                 x: getCenteredTextX('EDUCATION', minorTitleSize, page, font),
@@ -227,13 +222,47 @@ export default async function generate(user: RouterOutputs['user']['current']) {
                     width,
                     alignment: TextAlignment.Left,
                     cursor,
-                    font
+                    font,
+                    fontSize: bodySize,
+                    color: black
                 })
 
             }
 
             cursor -= mainTitleSize
 
+        }
+
+        //Skills section
+        if(user.skills) {
+
+            cursor -= 2 * mainTitleSize
+
+            page.drawText('SKILLS', {
+                x: getCenteredTextX('SKILLS', minorTitleSize, page, font),
+                y: cursor,
+                size: minorTitleSize,
+                font: font,
+                color: primaryColor,
+            })
+
+            cursor -= (bodySize/2)
+
+            const skillText = user.skills.join(' | ')
+
+            cursor -= drawMultilineSection({
+                text: skillText,
+                page,
+                width,
+                alignment: TextAlignment.Center,
+                cursor,
+                font,
+                fontSize: bodySize,
+                color: primaryColor
+            })
+
+
+             
         }
     }
 

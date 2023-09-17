@@ -53,7 +53,7 @@ export default function GPTSection({ onSaveState, prompt, results, isGenerating,
                       onClick={() => onGenerateCalled(promptRef?.current?.value ?? '')}
                      >
                         { isGenerating && <span className="loading loading-spinner"></span>}
-                        Generate
+                        { isGenerating ? 'Generating' : 'Generate' }
               </button>
             </div>
             <Textarea label='Generated' 
