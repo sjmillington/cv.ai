@@ -1,20 +1,16 @@
-import { User } from "@prisma/client";
-import { write } from "fs";
 import { PDFDocument, PDFFont, PDFPage, PageSizes, StandardFonts, TextAlignment, layoutMultilineText, rgb } from "pdf-lib";
 import { RouterOutputs } from "~/utils/api";
 
 const primaryColor = rgb(87/255, 13/255, 248/255)
-const black = rgb(0.1, 0.1, 0.1)
+const black = rgb(0.2, 0.2, 0.2)
 
 const mainTitleSize = 16
-const minorTitleSize = 11
-const bodySize = 10
+const minorTitleSize = 12
+const bodySize = 11
 
-const margins = 30;
+const margins = 50;
 
-const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"
-];
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
 
 const formatDate = (date: Date) => {
     return `${monthNames[date.getMonth()]} ${date.getFullYear()}`
@@ -45,12 +41,12 @@ interface MultilineSectionProps {
     cursor: number
 }
 
-const writeMultilineSection = ({
+const drawMultilineSection = ({
     page, text, font, width, cursor, alignment
  }: MultilineSectionProps) => {
     const lineWidth = font.widthOfTextAtSize(text, bodySize);
     
-    const sectionHeight = (lineWidth / width) * 2 * font.heightAtSize(bodySize)
+    const sectionHeight = Math.ceil(lineWidth / (width - 2 * margins)) * 1.2 * font.heightAtSize(bodySize)
 
     const { lines } = layoutMultilineText(text, {
         alignment,
@@ -90,12 +86,7 @@ export default async function generate(user: RouterOutputs['user']['current']) {
     const name = user.name || 'user'
  
     const page = pdfDoc.addPage(PageSizes.A4)
-
-
-
     const { width, height } = page.getSize()
-
-    const fontHeightAtBodySize = font.heightAtSize(bodySize);
 
     //contact section
     const contact = [user.phoneNumber, user.email, user.website].filter(c => c !== null && c !== undefined).join(' | ')
@@ -138,7 +129,7 @@ export default async function generate(user: RouterOutputs['user']['current']) {
 
         const { result } = user.personal
 
-        cursor -= writeMultilineSection({
+        cursor -= drawMultilineSection({
             text: result,
             page,
             width,
@@ -149,9 +140,10 @@ export default async function generate(user: RouterOutputs['user']['current']) {
 
     }
 
+    //Work Entries
     if(user?.workEntries.length > 0) {
 
-        cursor -= mainTitleSize
+        cursor -= 2 * mainTitleSize
 
         page.drawText('EXPERIENCE', {
             x: getCenteredTextX('EXPERIENCE', minorTitleSize, page, font),
@@ -181,49 +173,69 @@ export default async function generate(user: RouterOutputs['user']['current']) {
 
             for(let result of results ) {
 
-                const lineWidth = font.widthOfTextAtSize(result, bodySize);
-    
-                const sectionHeight = Math.ceil(lineWidth / (width - 2 * margins)) * fontHeightAtBodySize * 1.2
-
-                console.log(sectionHeight)
-    
-                const { lines } = layoutMultilineText(result, {
+                cursor -= drawMultilineSection({
+                    text: result,
+                    page,
+                    width,
                     alignment: TextAlignment.Left,
-                    font,
-                    fontSize: bodySize,
-                    bounds: {
-                        x: margins,
-                        y: cursor - sectionHeight,
-                        width: width - (2 * margins),
-                        height: sectionHeight
-                    }
+                    cursor,
+                    font
                 })
-    
-                lines?.forEach(line => {
-                    page.drawText(line.text, {
-                        x: line.x, 
-                        y: line.y,
-                        size: bodySize,
-                        font: font,
-                        color: black,
-                    })
-                })
-    
-                cursor -= sectionHeight
 
             }
 
             cursor -= mainTitleSize
 
-           
+        }
+
+        //Education
+        if(user.education) {
+
+            cursor -= 2 * mainTitleSize
+
+            page.drawText('EDUCATION', {
+                x: getCenteredTextX('EDUCATION', minorTitleSize, page, font),
+                y: cursor,
+                size: minorTitleSize,
+                font: font,
+                color: primaryColor,
+            })
+
+            cursor -= mainTitleSize
+
+            const { institution, course, start, end, grade, result } = user.education
+
+            const title = `${course} | ${institution} | ${grade} | ${formatDate(start ?? new Date())} - ${end ? formatDate(end) : 'Present'}`.toUpperCase()
+
+            page.drawText(title, {
+                x: getCenteredTextX(title, bodySize, page, font),
+                y: cursor,
+                size: bodySize,
+                font: font,
+                color: primaryColor,
+            })
+
+            cursor -= (bodySize/2)
+
+            const results = result?.split('\n') ?? []
+
+            for(let result of results ) {
+
+                cursor -= drawMultilineSection({
+                    text: result,
+                    page,
+                    width,
+                    alignment: TextAlignment.Left,
+                    cursor,
+                    font
+                })
+
+            }
+
+            cursor -= mainTitleSize
 
         }
     }
 
- 
-
-    console.log('saving')
     return await pdfDoc.saveAsBase64({ dataUri: true })
-
-   // saveByteArray(`${name}-CV.pdf`, bytes)
 }
