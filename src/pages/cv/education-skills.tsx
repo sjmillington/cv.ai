@@ -33,11 +33,6 @@ const CV = function({ session }: SessionProps) {
                     <h3 className="text-base font-semibold leading-7 text-gray-900">
                      Skills 
                     </h3>
-                    {/* <p className="mt-1 text-sm leading-6 text-gray-600">
-                    This is especially useful if you've recently graduated. 
-                    If you've been in the work place for longer, you may wish to omit a 
-                    description.
-                    </p> */}
                     <ListInput 
                         items={data?.skills ?? []}
                         onAdd={item => mutate({ data: { skills: [...data?.skills ?? [], item] } })}
