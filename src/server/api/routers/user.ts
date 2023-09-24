@@ -23,7 +23,7 @@ const BULLETPOINT_FORMAT_PARAMS = [
     }
 ] satisfies ChatCompletionMessageParam[]
 
-const PERSONAL_SECTION_PARAMS = [
+export const PERSONAL_SECTION_PARAMS = [
     {
         role: 'system',
         content: 'Use the folowing facts to create a short CV profile with no more than 70 words'
@@ -44,15 +44,10 @@ const EDUCATION_SECTION_PARAMS = [
     }
 ] satisfies ChatCompletionMessageParam[]
 
-const runGTP = async (prompt: string, statements: ChatCompletionMessageParam[]): Promise<string | undefined> => {
+export const runGTP = async (prompt: string, statements: ChatCompletionMessageParam[]): Promise<string | undefined> => {
     const completion = await openai.chat.completions.create({
         messages: [
-            ...statements,
-            // {
-            //     role: 'system',
-            //     content: statement
-            // },
-        
+            ...statements,        
             {
                 role: 'user',
                 content: `${prompt}`
