@@ -60,6 +60,7 @@ export default function GPTSection({ onSaveState, prompt, results, isGenerating,
             </div>
             <Textarea label='Generated' 
                         value={section} 
+                        disabled={!section}
                         ref={generateRef}
                         onChange={(e) => setSection(e.target.value)} 
                         onBlur={(e) => onSaveState(undefined, e.currentTarget.value)}
