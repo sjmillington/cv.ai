@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { RefObject, useEffect, useRef, useState } from "react"
 import Textarea from "./Textarea"
 
 interface GPTSectionProps {
@@ -6,28 +6,30 @@ interface GPTSectionProps {
     prompt: string,
     results: string,
     isGenerating: boolean,
-    onGenerateCalled: (prompt: string) => void
+    onGenerateCalled: (prompt: string) => void,
+    label?: string
 }
 
 const useAutosizeTextArea = (
-    textAreaRef: HTMLTextAreaElement | null,
+    textAreaRef: RefObject<HTMLTextAreaElement> | null,
     value: string,
     paddingBottom: number,
   ) => {
     useEffect(() => {
-      if (textAreaRef) {
+
+      if (textAreaRef !== null && textAreaRef.current) {
         // We need to reset the height momentarily to get the correct scrollHeight for the textarea
-        textAreaRef.style.height = "0px";
-        const scrollHeight = textAreaRef.scrollHeight;
+        textAreaRef.current.style.height = "0px";
+        const scrollHeight = textAreaRef.current.scrollHeight;
   
         // We then set the height directly, outside of the render loop
         // Trying to set this with state or a ref will product an incorrect value.
-        textAreaRef.style.height = paddingBottom + scrollHeight + "px";
-      }
+        textAreaRef.current.style.height = paddingBottom + scrollHeight + "px";
+      } 
     }, [textAreaRef, value]);
   };
 
-export default function GPTSection({ onSaveState, prompt, results, isGenerating, onGenerateCalled }: GPTSectionProps) {
+export default function GPTSection({ onSaveState, prompt, results, isGenerating, onGenerateCalled, label='Prompt' }: GPTSectionProps) {
 
     const [ section, setSection ] = useState('')
     const promptRef = useRef<HTMLTextAreaElement>(null)
@@ -37,13 +39,13 @@ export default function GPTSection({ onSaveState, prompt, results, isGenerating,
         setSection(results)
     }, [results])
 
-    useAutosizeTextArea(promptRef.current, prompt, 60)
-    useAutosizeTextArea(generateRef.current, section, 0)
+    useAutosizeTextArea(promptRef, prompt, 60)
+    useAutosizeTextArea(generateRef, section, 0)
 
     return (
         <>
-            <div className='relative min-h-128 mb-4'>
-              <Textarea label='Prompt' 
+            <div className='relative min-h-256 mb-4'>
+              <Textarea label={label} 
                         defaultValue={prompt} 
                         onBlur={e => onSaveState(e.currentTarget.value, undefined)} 
                         ref={promptRef}

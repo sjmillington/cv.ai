@@ -45,13 +45,21 @@ export const authOptions: NextAuthOptions = {
         id: user.id,
       },
     }),
+    redirect: ({ url }) => {
+      console.log(url)
+      return url;
+    }
+  },
+  theme: {
+    colorScheme: 'light',
   },
   adapter: PrismaAdapter(prisma),
   providers: [
     DiscordProvider({
+      id: 'discord',
+      name: 'Discord',
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
-      
     })
     /**
      * ...add more providers here.
