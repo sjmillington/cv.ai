@@ -15,25 +15,35 @@ const useAutosizeTextArea = (
     value: string,
     paddingBottom: number,
   ) => {
-    useEffect(() => {
+  useEffect(() => {
 
-      if (textAreaRef !== null && textAreaRef.current) {
-        // We need to reset the height momentarily to get the correct scrollHeight for the textarea
-        textAreaRef.current.style.height = "0px";
-        const scrollHeight = textAreaRef.current.scrollHeight;
-  
-        // We then set the height directly, outside of the render loop
-        // Trying to set this with state or a ref will product an incorrect value.
-        textAreaRef.current.style.height = paddingBottom + scrollHeight + "px";
-      } 
-    }, [textAreaRef, value]);
-  };
+    if (textAreaRef !== null && textAreaRef.current) {
+      // We need to reset the height momentarily to get the correct scrollHeight for the textarea
+      textAreaRef.current.style.height = "0px";
+      const scrollHeight = textAreaRef.current.scrollHeight;
+
+      // We then set the height directly, outside of the render loop
+      // Trying to set this with state or a ref will product an incorrect value.
+      textAreaRef.current.style.height = paddingBottom + scrollHeight + "px";
+    } 
+  }, [textAreaRef, value]);
+};
+
+const messages = [
+    'Generating...',
+    'Working hard (or hardly working?)...',
+    'Having a snack...',
+    'Computering some data...',
+    'Taking over the world...',
+]
+
 
 export default function GPTSection({ onSaveState, prompt, results, isGenerating, onGenerateCalled, label='Prompt' }: GPTSectionProps) {
 
     const [ section, setSection ] = useState('')
     const promptRef = useRef<HTMLTextAreaElement>(null)
     const generateRef = useRef<HTMLTextAreaElement>(null)
+    const [ messageCounter, setMessageCounter ] = useState(0)
 
     useEffect(() => {
         setSection(results)
@@ -41,6 +51,21 @@ export default function GPTSection({ onSaveState, prompt, results, isGenerating,
 
     useAutosizeTextArea(promptRef, prompt, 60)
     useAutosizeTextArea(generateRef, section, 0)
+
+    useEffect(() => {
+
+      let i: NodeJS.Timer;
+
+      if(!isGenerating) {
+        setMessageCounter(0)
+      } else {
+        i = setInterval(() => {
+          setMessageCounter(prevCounter => prevCounter+1)
+        }, 2000)
+      }
+
+      return () => clearInterval(i)
+    }, [ isGenerating ])
 
     return (
         <>
@@ -55,7 +80,7 @@ export default function GPTSection({ onSaveState, prompt, results, isGenerating,
                       onClick={() => onGenerateCalled(promptRef?.current?.value ?? '')}
                      >
                         { isGenerating && <span className="loading loading-spinner"></span>}
-                        { isGenerating ? 'Generating' : 'Generate' }
+                        { isGenerating ? messages[messageCounter] ?? 'BRB...' : 'Generate' }
               </button>
             </div>
             <Textarea label='Generated' 

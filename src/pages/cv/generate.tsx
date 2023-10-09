@@ -23,7 +23,7 @@ const Generate = function({ session }: SessionProps) {
             }
         }
     }
-    
+
     useEffect(() => {
         drawPDF()
      }, [ colour, data ])
