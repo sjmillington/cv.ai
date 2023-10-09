@@ -1,7 +1,8 @@
 import { PDFDocument, PDFFont, PDFPage, PageSizes, RGB, StandardFonts, TextAlignment, layoutMultilineText, rgb } from "pdf-lib";
 import { RouterOutputs } from "~/utils/api";
+import { Hex } from '../components/form/ColourPicker'
 
-const primaryColor = rgb(87/255, 13/255, 248/255)
+
 const black = rgb(0.2, 0.2, 0.2)
 
 const mainTitleSize = 16
@@ -66,11 +67,30 @@ const drawMultilineSection = ({
     return sectionHeight
 }
 
-export default async function generate(user: RouterOutputs['user']['current']) {
+function hexToRgb(hex: Hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+    return {
+      r: parseInt(result?.[1] ?? '00', 16),
+      g: parseInt(result?.[2] ?? '00', 16),
+      b: parseInt(result?.[3] ?? '00', 16)
+    }
+  }
+
+interface Options {
+    colour: Hex
+}
+
+export default async function generate(user: RouterOutputs['user']['current'], options: Options) {
+
+    const { colour } = options
 
     if(!user) {
         return;
     }
+    
+    const { r, g, b } = hexToRgb(colour)
+    const primaryColor = rgb(r/255, g/255, b/255)
 
     const pdfDoc = await PDFDocument.create()
 

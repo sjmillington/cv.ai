@@ -7,7 +7,7 @@ import { useState } from "react";
 
 export default function Home() {
 
-  const [ text, setText ] = useState('I am some initial text about a person, write me a CV personal section')
+  const [ text, setText ] = useState('I am a marketing expert with over 12 years in the clown industry. I help clowns find their next party breakthrough.')
   
   const { data, isLoading, fetchStatus, refetch } = api.public.try.useQuery({ text }, { enabled: false })
 
@@ -21,7 +21,7 @@ export default function Home() {
         <div className="text-center xl:text-left xl:flex-1">
           <div className="">
             <h1 className="text-5xl font-extrabold tracking-light xl:text-6xl">
-              Writing a CV is hard. <br/>
+              Writing CV's is hard.. <br/>
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent leading-tight">Why bother?</span>
             </h1>
             <p className="py-4 text-lg xl:text-xl font-light">Let AI build your next CV.</p>
