@@ -2,11 +2,57 @@ import CVFormLayout from "~/components/cv/CVFormLayout";
 import withProtection, { SessionProps } from "~/components/hoc/withProtection";
 import DefaultLayout from "~/layouts/layout";
 
-import { api } from "~/utils/api";
+import { RouterOutputs, api } from "~/utils/api";
 
 import generateDefault from "~/pdf/default"
 import { useEffect, useRef, useState } from "react";
 import ColourPicker, { Hex, colours } from "~/components/form/ColourPicker";
+import { formatMonthYearDate } from "~/utils/formatters";
+
+
+const download = (data: RouterOutputs['user']['current']) => {
+    const a = document.createElement("a");
+
+    const lines = [
+        data?.name,
+        data?.phoneNumber,
+        data?.email,
+        data?.website,
+        data?.personal?.result,
+        '',
+        'Work',
+        '',
+        data?.workEntries?.map(entry => {
+            return [
+                '',
+                entry.company,
+                entry.start ? formatMonthYearDate(entry.start) : '',
+                entry.end ? formatMonthYearDate(entry.end) : '',
+                entry.role,
+                entry.result,
+                ''
+            ].join('\n')
+        }) ?? '',
+        '',
+        'Education',
+        '',
+        data?.education?.institution,
+        data?.education?.course,
+        data?.education?.start ? formatMonthYearDate(data.education.start) : '',
+        data?.education?.end ? formatMonthYearDate(data.education.end) : '',
+        data?.education?.grade,
+        data?.education?.result,
+        '',
+        'Skills',
+        '',
+        data?.skills?.join(', ')
+    ].filter(line => line !== undefined).join('\n')
+
+    const file = new Blob([lines], { type: 'txt' });
+    a.href = URL.createObjectURL(file);
+    a.download = 'cv.ai.txt';
+    a.click();
+}
 
 const Generate = function({ session }: SessionProps) {
 
@@ -21,6 +67,12 @@ const Generate = function({ session }: SessionProps) {
             if(d) {
                 setIframeSrc(d)
             }
+        }
+    }
+    
+    const handleDownload = () => {
+        if(data) {
+            download(data)
         }
     }
 
@@ -54,7 +106,7 @@ const Generate = function({ session }: SessionProps) {
                             Or hey, this just might not be your style!
                         </span>
                     </div>
-                    <button className="btn mt-2 rounded-xl text-sm">Export as plain-text</button>
+                    <button className="btn mt-2 rounded-xl text-sm" onClick={handleDownload}>Export as plain-text</button>
                 </div>
                 
             </CVFormLayout>
