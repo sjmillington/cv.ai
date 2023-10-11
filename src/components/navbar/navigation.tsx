@@ -1,6 +1,7 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link"
 import { useRouter } from "next/router";
+import Robot from "../icons/robot";
 
 export default function Navigation() {
 
@@ -10,7 +11,9 @@ export default function Navigation() {
     return (
         <div className="navbar bg-base-100">
             <div className="flex-1">
-                <Link className="btn btn-ghost normal-case text-xl" href="/">cv.AI</Link>
+                <Link className="btn btn-ghost normal-case text-xl" href="/">
+                    <Robot />
+                </Link>
             </div>
             {
                 sessionData ? (
