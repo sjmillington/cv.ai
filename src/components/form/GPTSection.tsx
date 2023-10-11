@@ -61,7 +61,7 @@ export default function GPTSection({ onSaveState, prompt, results, isGenerating,
       } else {
         i = setInterval(() => {
           setMessageCounter(prevCounter => prevCounter+1)
-        }, 2000)
+        }, 3000)
       }
 
       return () => clearInterval(i)

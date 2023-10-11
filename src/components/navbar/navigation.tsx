@@ -1,9 +1,11 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link"
+import { useRouter } from "next/router";
 
 export default function Navigation() {
 
     const { data: sessionData } = useSession();
+    const router = useRouter()
 
     return (
         <div className="navbar bg-base-100">
@@ -21,7 +23,9 @@ export default function Navigation() {
                             </div>
                         </label>
                         <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-                            <li><button onClick={() => void signOut()} >Sign Out</button></li>
+                            <li><button onClick={() => void signOut({ redirect: false }).then(() => {
+                                router.push('/')
+                            })} >Sign Out</button></li>
                         </ul>
                         </div>
                     </div>

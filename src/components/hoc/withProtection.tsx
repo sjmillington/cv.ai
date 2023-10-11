@@ -19,7 +19,7 @@ const withProtection = <P extends object>(Component: React.ComponentType<P>): Re
         }
     }, [])
 
-    return <Component {...props as P} session={data} />
+    return data && <Component {...props as P} session={data} />
 }
     
 
