@@ -21,7 +21,7 @@ export default function Home() {
         <div className="text-center xl:text-left xl:flex-1">
           <div className="">
             <h1 className="text-5xl font-extrabold tracking-light xl:text-6xl">
-              Writing CVs is hard.. <br/>
+              Writing CV&apos;s is hard.. <br/>
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent leading-tight">Why bother?</span>
             </h1>
             <p className="py-4 text-lg xl:text-xl font-light">Let AI build your next CV..</p>
