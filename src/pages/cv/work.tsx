@@ -31,7 +31,7 @@ const CV = function({ }: SessionProps) {
                     {
                         data?.workEntries.map((entry, i) => {
                             return (
-                                <WorkExperienceSection index={i+1} key={entry.id} refetch={() => refetch()} {...entry} />
+                                <WorkExperienceSection index={i+1} key={entry.id} refetch={() => void refetch()} {...entry} />
                             )
                         })
                     }
