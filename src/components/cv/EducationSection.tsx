@@ -19,7 +19,7 @@ export default function EducationSection() {
 
     const { mutate: runGPT, isLoading } = api.user.educationGTP.useMutation({
         async onSuccess(result: string) {
-            refetch() //todo - this could be done with setData, but i'm being lazy
+            await refetch() //todo - this could be done with setData, but i'm being lazy
         }
     })
 
@@ -30,8 +30,8 @@ export default function EducationSection() {
                 Education 
                 </h2>
                 <p className="mt-1 text-sm leading-6 text-gray-600">
-                This is especially useful if you've recently graduated. 
-                If you've been in the work place for longer, you may wish to omit a 
+                This is especially useful if you&apos;ve recently graduated. 
+                If you&apos;ve been in the work place for longer, you may wish to omit a 
                 description.
                 </p>
             </div>

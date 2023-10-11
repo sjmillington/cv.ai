@@ -1,4 +1,4 @@
-import withProtection, { SessionProps } from "~/components/hoc/withProtection";
+import withProtection, { type SessionProps } from "~/components/hoc/withProtection";
 import DefaultLayout from "~/layouts/layout";
 import TextInput from "~/components/form/TextInput";
 
@@ -6,9 +6,9 @@ import { api } from '~/utils/api'
 import PersonalSection from "~/components/cv/PersonalSection";
 import CVFormLayout from "~/components/cv/CVFormLayout";
 
-const CV = function({ session }: SessionProps) {
+const CV = function({ }: SessionProps) {
 
-    const { data, isLoading, refetch } = api.user.current.useQuery();
+    const { data, isLoading } = api.user.current.useQuery();
 
     const update = api.user.update.useMutation({
         async onMutate({ data }) {

@@ -1,12 +1,12 @@
 import CVFormLayout from "~/components/cv/CVFormLayout";
-import withProtection, { SessionProps } from "~/components/hoc/withProtection";
+import withProtection, { type SessionProps } from "~/components/hoc/withProtection";
 import DefaultLayout from "~/layouts/layout";
 
-import { RouterOutputs, api } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 
 import generateDefault from "~/pdf/default"
 import { useEffect, useRef, useState } from "react";
-import ColourPicker, { Hex, colours } from "~/components/form/ColourPicker";
+import ColourPicker, { type Hex, colours } from "~/components/form/ColourPicker";
 import { formatMonthYearDate } from "~/utils/formatters";
 
 
@@ -54,7 +54,7 @@ const download = (data: RouterOutputs['user']['current']) => {
     a.click();
 }
 
-const Generate = function({ session }: SessionProps) {
+const Generate = function({ }: SessionProps) {
 
     const ref = useRef<HTMLIFrameElement>(null)
     const [ iframeSrc, setIframeSrc ] = useState('')
@@ -77,8 +77,8 @@ const Generate = function({ session }: SessionProps) {
     }
 
     useEffect(() => {
-        drawPDF()
-     }, [ colour, data ])
+        drawPDF().catch(console.error)
+     }, [ colour, data, drawPDF ])
 
     if(isLoading) {
         return <p>Loading...</p>

@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
         id: user.id,
       },
     }),
-    redirect: ({ url }) => {
+    redirect: () => {
       return '/cv';
     }
   },

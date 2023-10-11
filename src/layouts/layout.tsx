@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { type PropsWithChildren } from "react";
 
 import Head from 'next/head'
 import Navigation from "~/components/navbar/navigation";

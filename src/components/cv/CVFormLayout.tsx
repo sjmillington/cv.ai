@@ -1,5 +1,5 @@
-import { PropsWithChildren } from "react";
-import Progress, { CVProgress } from "./Progress";
+import { type PropsWithChildren } from "react";
+import Progress, { type CVProgress } from "./Progress";
 import Link from "next/link";
 
 interface Props extends PropsWithChildren {

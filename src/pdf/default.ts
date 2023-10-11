@@ -1,6 +1,6 @@
-import { PDFDocument, PDFFont, PDFPage, PageSizes, RGB, StandardFonts, TextAlignment, layoutMultilineText, rgb } from "pdf-lib";
-import { RouterOutputs } from "~/utils/api";
-import { Hex } from '../components/form/ColourPicker'
+import { PDFDocument, type PDFFont, type PDFPage, PageSizes, type RGB, StandardFonts, TextAlignment, layoutMultilineText, rgb } from "pdf-lib";
+import { type RouterOutputs } from "~/utils/api";
+import { type Hex } from '../components/form/ColourPicker'
 
 
 const black = rgb(0.2, 0.2, 0.2)
@@ -68,7 +68,7 @@ const drawMultilineSection = ({
 }
 
 function hexToRgb(hex: Hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 
     return {
       r: parseInt(result?.[1] ?? '00', 16),
@@ -96,7 +96,7 @@ export default async function generate(user: RouterOutputs['user']['current'], o
 
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
 
-    const name = user.name || 'user'
+    const name = user.name ?? 'user'
  
     const page = pdfDoc.addPage(PageSizes.A4)
     const { width, height } = page.getSize()
@@ -170,7 +170,7 @@ export default async function generate(user: RouterOutputs['user']['current'], o
 
         cursor -= mainTitleSize
 
-        for(let entry of user.workEntries) {
+        for(const entry of user.workEntries) {
 
             const title = `${entry.company} | ${entry.role} | ${formatDate(entry.start ?? new Date())} - ${entry.end ? formatDate(entry.end) : 'Present'}`.toUpperCase()
 
@@ -186,7 +186,7 @@ export default async function generate(user: RouterOutputs['user']['current'], o
 
             const results = entry?.result?.split('\n') ?? []
 
-            for(let result of results ) {
+            for(const result of results ) {
 
                 cursor -= drawMultilineSection({
                     text: result,
@@ -234,7 +234,7 @@ export default async function generate(user: RouterOutputs['user']['current'], o
 
             const results = result?.split('\n') ?? []
 
-            for(let result of results ) {
+            for(const result of results ) {
 
                 cursor -= drawMultilineSection({
                     text: result,

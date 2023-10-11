@@ -12,7 +12,7 @@ export default function Home() {
   const { data, isLoading, fetchStatus, refetch } = api.public.try.useQuery({ text }, { enabled: false })
 
   const onGenerate = () => {
-    refetch()
+     refetch().catch(console.error)
   }
 
   return (
@@ -21,10 +21,10 @@ export default function Home() {
         <div className="text-center xl:text-left xl:flex-1">
           <div className="">
             <h1 className="text-5xl font-extrabold tracking-light xl:text-6xl">
-              Writing CV's is hard.. <br/>
+              Writing CVs is hard.. <br/>
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent leading-tight">Why bother?</span>
             </h1>
-            <p className="py-4 text-lg xl:text-xl font-light">Let AI build your next CV......</p>
+            <p className="py-4 text-lg xl:text-xl font-light">Let AI build your next CV..</p>
             <button className="btn btn-secondary mt-2" ><Link href='/cv'>Get Started</Link></button>
           </div>
         </div>
@@ -35,9 +35,9 @@ export default function Home() {
               <GPTSection
                 prompt={text}
                 label={'Tell us about yourself'}
-                onSaveState={(prompt, result) => setText(prompt ?? '')}
+                onSaveState={(prompt) => setText(prompt ?? '')}
                 isGenerating={isLoading && fetchStatus === 'fetching'}
-                onGenerateCalled={(text) => onGenerate()}
+                onGenerateCalled={onGenerate}
                 results={data ?? ''}
                 
               />

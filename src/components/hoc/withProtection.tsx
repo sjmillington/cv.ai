@@ -1,5 +1,5 @@
 
-import { Session } from "next-auth/core/types";
+import { type Session } from "next-auth/core/types";
 import { useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation'
 import { useEffect } from "react";
@@ -8,6 +8,7 @@ export interface SessionProps {
     session: Session
 }
 
+// eslint-disable-next-line react/display-name
 const withProtection = <P extends object>(Component: React.ComponentType<P>): React.FC<P & SessionProps> => ({ ...props}: P) =>{
 
     const { data } = useSession()
@@ -19,7 +20,7 @@ const withProtection = <P extends object>(Component: React.ComponentType<P>): Re
         }
     }, [])
 
-    return data && <Component {...props as P} session={data} />
+    return data && <Component {...props } session={data} />
 }
     
 

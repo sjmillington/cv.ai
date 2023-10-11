@@ -15,7 +15,7 @@ export default function PersonalFunction() {
 
     const { mutate: runGPT, isLoading } = api.user.personalSectionGTP.useMutation({
         async onSuccess(result: string) {
-            refetch() //todo - this could be done with setData, but i'm being lazy
+            await refetch() //todo - this could be done with setData, but i'm being lazy
         }
     })
 

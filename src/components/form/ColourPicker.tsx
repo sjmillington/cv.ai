@@ -62,7 +62,7 @@ interface Props {
     onPicked: (hex: Hex) => void
 }
 
-export default function({ onPicked }: Props) {
+export default function ColourPicker({ onPicked }: Props) {
 
     const [ picked, setPicked ] = useState<`#${string}`>(colours[0]!.hex)
 

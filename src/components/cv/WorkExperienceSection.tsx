@@ -13,7 +13,7 @@ interface Exprience  {
     prompt: string;
     result: string | null,
     index: number,
-    refetch: () => {}
+    refetch: () => void
 }
 
 

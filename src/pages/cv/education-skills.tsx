@@ -1,18 +1,18 @@
 import CVFormLayout from "~/components/cv/CVFormLayout";
 import EducationSection from "~/components/cv/EducationSection";
 import ListInput from "~/components/form/ListInput";
-import withProtection, { SessionProps } from "~/components/hoc/withProtection";
+import withProtection, { type SessionProps } from "~/components/hoc/withProtection";
 import DefaultLayout from "~/layouts/layout";
 
 import { api } from "~/utils/api";
 
-const CV = function({ session }: SessionProps) {
+const CV = function({ }: SessionProps) {
 
     const { data, isLoading, refetch } = api.user.current.useQuery();
 
-    const { mutate, isLoading: updating } = api.user.update.useMutation({
-        onSuccess() {
-            refetch()
+    const { mutate } = api.user.update.useMutation({
+        async onSuccess() {
+            await refetch()
         }
     })
 
