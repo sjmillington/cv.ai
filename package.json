@@ -6,7 +6,6 @@
     "vercel-build": "prisma generate && prisma db push && prisma db seed && next build",
     "build": "next build",
     "dev": "next dev",
-    "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start"
   },
