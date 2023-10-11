@@ -100,11 +100,13 @@ const Generate = function({ session }: SessionProps) {
                     <div className="alert">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <span className='text-sm'>Depending on your content, this may not render correctly. 
-                            You can go back to modify your content to fit, or click the button below to export the plain-text and do it elsewhere, like Word. (other word processors are available). <br/><br/>
-                            Or hey, this just might not be your style!
+                            You can go back to modify your content to fit, or click the button below to export the plain-text and do it elsewhere, like Word. (other word processors are available).
                         </span>
                     </div>
                     <button className="btn mt-2 rounded-xl text-sm" onClick={handleDownload}>Export as plain-text</button>
+                </div>
+                <div className="sm:col-span-6">
+                    <p className="text-center">Did this help? If so, why not <a href="https://www.buymeacoffee.com/theonesam" target="blank">buy me a coffee!</a></p>
                 </div>
                 
             </CVFormLayout>

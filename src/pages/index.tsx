@@ -17,7 +17,7 @@ export default function Home() {
 
   return (
     <DefaultLayout includeNav={false}>
-      <div className="pt-24 xl:pt-0 min-h-screen bg-gray-50 px-4 xl:px-16 flex flex-col xl:flex-row xl:items-center">
+      <div className="pt-24 xl:pt-0 min-h-screen bg-slate-200 px-4 xl:px-16 flex flex-col xl:flex-row xl:items-center">
         <div className="text-center xl:text-left xl:flex-1">
           <div className="">
             <h1 className="text-5xl font-extrabold tracking-light xl:text-6xl">
