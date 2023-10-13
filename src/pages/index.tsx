@@ -24,7 +24,7 @@ export default function Home() {
               Writing CV&apos;s is hard... <br/>
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent leading-tight">Why bother?</span>
             </h1>
-            <p className="py-4 text-xl xl:text-2xl font-bold">Let AI do the heavy lifting so <br/> that you don't have to.</p>
+            <p className="py-4 text-xl xl:text-2xl font-bold">Let AI do the heavy lifting so <br/> that you don&pos;t have to.</p>
             <button className="btn btn-secondary btn-outline mt-2" ><Link href='/cv'>Get Started </Link></button>
           </div>
         </div>
