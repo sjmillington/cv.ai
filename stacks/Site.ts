@@ -4,7 +4,7 @@ import { NextjsSite, StackContext } from "sst/constructs";
 export default function Site({ stack }: StackContext) {
 
   const site = new NextjsSite(stack, "Site", {
-    path: "src",
+    path: ".",
     environment: {
         POSTGRES_PRISMA_URL: process.env.POSTGRES_PRISMA_URL!,
         NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET!,
