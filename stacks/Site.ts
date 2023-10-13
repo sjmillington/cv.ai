@@ -15,7 +15,9 @@ export default function Site({ stack }: StackContext) {
         GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID!,
         GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET!
     },
-    warm: 2
+    warm: 2,
+    timeout: '60 seconds'    
+
   });
 
   // Add the site's URL to stack output
