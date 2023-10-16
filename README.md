@@ -15,6 +15,7 @@ Bootstrapped with [T3 Stack](https://create.t3.gg/)
 - [Tailwind CSS](https://tailwindcss.com)
 - [DaisyUI](https://daisyui.com)
 - [tRPC](https://trpc.io)
+- [Serverless Stack](https://sst.dev/) 
 
 
 ## Environment Variables
